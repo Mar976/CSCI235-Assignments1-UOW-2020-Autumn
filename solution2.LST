@@ -1,0 +1,59 @@
+SQL> SET FEEDBACK ON
+SQL> SET LINESIZE 300
+SQL> SET PAGESIZE 200
+SQL> SET SERVEROUTPUT ON
+SQL> 
+SQL> DECLARE
+  2      ID_O    ORDERS.ORDER_ID%TYPE;
+  3      NAME_C  CUSTOMER.COMPANY_NAME%TYPE;
+  4      DATE_O  ORDERS.ORDER_DATE%TYPE;
+  5      ROW_COUNT   NUMBER(2) :=1;
+  6      CURSOR LASTFIVE IS 
+  7          SELECT ORDERS.ORDER_ID, CUSTOMER.COMPANY_NAME, ORDERS.ORDER_DATE
+  8          FROM ORDERS INNER JOIN CUSTOMER ON (ORDERS.CUSTOMER_CODE = CUSTOMER.CUSTOMER_CODE)
+  9          ORDER BY ORDERS.ORDER_DATE DESC;    
+ 10  BEGIN
+ 11      OPEN LASTFIVE;
+ 12      LOOP
+ 13      FETCH LASTFIVE INTO ID_O, NAME_C, DATE_O;
+ 14          IF LASTFIVE%NOTFOUND THEN
+ 15              EXIT;
+ 16          END IF;
+ 17          DBMS_OUTPUT.PUT_LINE('Order id: '   ||  ID_O);
+ 18          DBMS_OUTPUT.PUT_LINE('Order date: '   ||  TO_CHAR(DATE_O,'DD-MON-YY'));
+ 19          DBMS_OUTPUT.PUT_LINE('Company name: '   ||  NAME_C);
+ 20          DBMS_OUTPUT.PUT_LINE('=======================================');
+ 21          ROW_COUNT := ROW_COUNT + 1;
+ 22          EXIT WHEN LASTFIVE%ROWCOUNT = 5;        
+ 23      END LOOP;
+ 24      CLOSE LASTFIVE;
+ 25  EXCEPTION
+ 26      WHEN OTHERS THEN
+ 27          DBMS_OUTPUT.PUT_LINE(SQLERRM || '   ' || SQLCODE);
+ 28  END;
+ 29  /
+Order id: 313
+Order date: 11-MAR-98
+Company name: Bon app'
+=======================================
+Order id: 314
+Order date: 11-MAR-98
+Company name: Save-a-lot Markets
+=======================================
+Order id: 312
+Order date: 10-MAR-98
+Company name: Magazzini Alimentari Riuniti
+=======================================
+Order id: 292
+Order date: 09-OCT-97
+Company name: Ernst Handel
+=======================================
+Order id: 261
+Order date: 02-JUN-97
+Company name: Save-a-lot Markets
+=======================================
+
+
+PL/SQL procedure successfully completed.
+
+SQL> spool off

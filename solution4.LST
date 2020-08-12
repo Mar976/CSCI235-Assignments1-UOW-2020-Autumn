@@ -1,0 +1,82 @@
+SQL> SPOOL solution4
+SQL> SET SERVEROUTPUT ON
+SQL> SET ECHO ON
+SQL> SET FEEDBACK ON
+SQL> SET LINESIZE 100
+SQL> SET PAGESIZE 200
+SQL> 
+SQL> CREATE OR REPLACE FUNCTION TOTAL_ORDERS(INPUT_COMPANY_NAME CUSTOMER.COMPANY_NAME%TYPE)
+  2  RETURN NUMBER IS
+  3      TOTAL_NUMBERS   NUMBER;
+  4  BEGIN
+  5      --EXECUTING THE FUCNTION
+  6      SELECT COUNT(*) INTO TOTAL_NUMBERS
+  7      FROM ORDERS INNER JOIN CUSTOMER ON (ORDERS.CUSTOMER_CODE = CUSTOMER.CUSTOMER_CODE)
+  8      WHERE  CUSTOMER.COMPANY_NAME = INPUT_COMPANY_NAME
+  9      GROUP BY ORDERS.CUSTOMER_CODE;
+ 10      RETURN TOTAL_NUMBERS;
+ 11  EXCEPTION
+ 12      WHEN OTHERS THEN
+ 13          DBMS_OUTPUT.PUT_LINE(SQLERRM);    
+ 14      COMMIT;
+ 15  END;
+ 16  /
+
+Function TOTAL_ORDERS compiled
+
+SQL> --Use the function
+SQL> SELECT COMPANY_NAME,ADDRESS,TOTAL_ORDERS(COMPANY_NAME)
+  2  FROM CUSTOMER
+  3  WHERE TOTAL_ORDERS(COMPANY_NAME)>2 AND TOTAL_ORDERS(COMPANY_NAME)<6;
+
+COMPANY_NAME
+----------------------------------------
+ADDRESS                                                      TOTAL_ORDERS(COMPANY_NAME)
+------------------------------------------------------------ --------------------------
+Bon app'                                 
+12, rue des Bouchers                                                                  3
+
+Bottom-Dollar Markets                    
+23 Tsawassen Blvd.                                                                    4
+
+Folk och fa HB                           
+Åkergatan 24                                                                        4
+
+Hungry Coyote Import Store               
+City Center Plaza 516 Main St.                                                        3
+
+Hungry Owl All-Night Grocers             
+8 Johnstown Road                                                                      4
+
+La maison d'Asie                         
+1 rue Alsace-Lorraine                                                                 3
+
+Magazzini Alimentari Riuniti             
+Via Ludovico il Moro 22                                                               3
+
+Mere Paillarde                           
+43 rue St. Laurent                                                                    4
+
+Old World Delicatessen                   
+2743 Bering St.                                                                       3
+
+Reggiani Caseifici                       
+Strada Provinciale 124                                                                3
+
+Ricardo Adocicados                       
+Av. Copacabana, 267                                                                   4
+
+Split Rail Beer And Ale                  
+P.O. Box 555                                                                          3
+
+Toms Spezialitaten                       
+Luisenstr. 48                                                                         4
+
+Wartian Herkku                           
+Torikatu 38                                                                           5
+
+
+14 rows selected. 
+
+SQL> 
+SQL> SPOOL OFF
